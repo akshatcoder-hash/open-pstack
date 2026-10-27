@@ -38,7 +38,7 @@ Remaining triggers:
 
 ## Route by request
 
-Route on what the user asked for, not on the phase you happen to be in. Take the one row that owns the request and read that skill or playbook before acting. The rows above stay cumulative: a `.ts` bug routes to **tdd** and still reads **typescript-best-practices**, and any row that writes prose still reads **unslop**. A row names a skill only where the narrower job beats the playbook that would otherwise own the request.
+Route on what the user asked for, not on the phase you happen to be in. Take every row that applies and read each skill or playbook it names before acting. Where two rows overlap, the narrower one owns the work and the broader one still applies beside it: a `.ts` bug reads **tdd** for the fix and **typescript-best-practices** with it, and any row that writes prose still reads **unslop**. The trigger list above stays in force alongside these rows. A row names a skill only where the narrower job beats the playbook that would otherwise own the request.
 
 | The request | Route |
 | --- | --- |
@@ -72,9 +72,9 @@ Route on what the user asked for, not on the phase you happen to be in. Take the
 
 Six of those rows run only when the user types them: **correct**, **in-your-own-words**, **ketchup**, **maintain-formal-verification-skill**, **poteto-help** and **sharpen**. On Claude Code each carries `disable-model-invocation: true`, so name the skill and let the user send it. Invoking one fails.
 
-A route to a skill missing from the available-skills list is turned off on this install. Skip it.
+If the available-skills list omits a row's skill, that skill is unavailable in this install. Handle the request without it.
 
-A request that matches no row takes no skill. Answering directly is the route for a question the tools settle and for an edit the user scoped themselves.
+A request that matches no row takes no skill. Answering directly is the route for a quick factual question and for a trivial one-line edit the user scoped themselves.
 
 ## Principles
 
