@@ -29,7 +29,7 @@ pstack is a plugin for coding agents. It is not a new model or a hosted service.
 
 The normal entry point is `poteto-mode`. You give it a task in plain language. It then:
 
-- reads the task and chooses a workflow that fits;
+- reads the task and chooses a workflow that fits, and routes a request that matches a narrower skill to that skill;
 - learns how the current system works before changing it;
 - compares designs when the choice matters;
 - favors small, simple changes over extra machinery;

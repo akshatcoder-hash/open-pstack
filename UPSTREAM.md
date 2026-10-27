@@ -55,6 +55,8 @@ The table above is the current Cursor sync point. Open Pstack 1.16.0 imported th
 
 - **#232 — subagent waits in babysit**: Cursor's babysit step 6 runs `drive` and `background` under `/loop`. Claude Code subagents have no `ScheduleWakeup`, so `/loop` cannot run in them. The port adds one sentence after the `/loop` sentence that limits `/loop` to the main session and points a Claude Code subagent to `plugins/pstack/skills/poteto-mode/references/codex-tools.md#waits-on-claude-code`, which holds the wait rules. Preserve this sentence during upstream syncs.
 
+- **#252 — poteto-mode route table**: upstream's `poteto-mode` trigger list names a skill for a work phase, not for the user's intent, so a request such as "catch me up" or "what could this break" reaches no route. The port adds a `## Route by request` section between that list and `## Principles` in `plugins/pstack/skills/poteto-mode/SKILL.md`: one row per intent, naming every bundled skill a request can own. The section keeps the trigger list cumulative rather than exclusive, defers driving a PR to the Babysit playbook, and names the six `disable-model-invocation` skills for the user to type instead of invoking them. Preserve the section and that cumulative rule during upstream syncs. A sync that adds a skill adds its row.
+
 ## Check for changes
 
 The repository already names Cursor's repository as the `cursor` remote in the maintainer checkout. A fresh clone can add it once:

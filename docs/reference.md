@@ -123,7 +123,7 @@ The table uses the short upstream names. Claude Code exposes each native skill w
 
 | skill | use it when |
 | --- | --- |
-| `/poteto-mode` | default entry point for any non-trivial task |
+| `/poteto-mode` | default entry point for any non-trivial task; its Route by request table sends each request to the skill that fits |
 | `/how` | walk through how a subsystem works |
 | `/why` | investigate why something was built this way (parallel multi-MCP evidence) |
 | `/architect` | settle types and module shape before writing code that crosses a function boundary |

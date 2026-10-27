@@ -403,6 +403,46 @@ else
   fail=1
 fi
 
+note "Checking the poteto-mode route table"
+poteto="$repo/plugins/pstack/skills/poteto-mode/SKILL.md"
+route_section="$(sed -n '/^## Route by request$/,/^## Principles$/p' "$poteto" | sed '$d')"
+route_bad=""
+if [ -z "$route_section" ]; then
+  route_bad="no '## Route by request' section between the trigger list and '## Principles'"$'\n'
+else
+  while IFS= read -r row; do
+    row_cells="$(printf '%s' "$row" | grep -o '|' | wc -l | tr -d ' ')"
+    [ "$row_cells" = "3" ] || route_bad="${route_bad}not a two-cell row: $row"$'\n'
+    route_cell="$(printf '%s' "$row" | sed -E 's/^\|[^|]*\|(.*)\|$/\1/' | tr -d ' ')"
+    [ -n "$route_cell" ] || route_bad="${route_bad}empty route cell: $row"$'\n'
+  done < <(printf '%s\n' "$route_section" | grep '^| ' | grep -vF '| The request | Route |' | grep -vF '| --- | --- |')
+fi
+route_rows="$(printf '%s\n' "$route_section" | grep -c '^| ' || true)"
+[ "$route_rows" -ge 3 ] || route_bad="${route_bad}route table has no data rows"$'\n'
+while IFS= read -r routed; do
+  [ -z "$routed" ] && continue
+  [ -d "$repo/plugins/pstack/skills/$routed" ] || route_bad="${route_bad}route names a missing skill: $routed"$'\n'
+done < <(printf '%s\n' "$route_section" | grep '^| ' | cut -d'|' -f3 | grep -o '\*\*[a-z0-9-]*\*\*' | tr -d '*' | sort -u)
+for skill_dir in "$repo"/plugins/pstack/skills/*/; do
+  skill_name="$(basename "$skill_dir")"
+  case "$skill_name" in
+    poteto-mode|principle-*) continue ;;
+  esac
+  grep -Fq "**$skill_name**" "$poteto" || route_bad="${route_bad}no route names $skill_name"$'\n'
+done
+typed_flag="$(grep -l '^disable-model-invocation: true$' "$repo"/plugins/pstack/skills/*/SKILL.md | xargs -n1 dirname | xargs -n1 basename | sort)"
+typed_named="$(printf '%s\n' "$route_section" | grep '^Six of those rows run only when the user types them' | grep -o '\*\*[a-z0-9-]*\*\*' | tr -d '*' | sort)"
+if [ "$typed_flag" != "$typed_named" ]; then
+  route_bad="${route_bad}typed-only routes differ from the skills carrying disable-model-invocation: named=[$(printf '%s' "$typed_named" | tr '\n' ' ')] flagged=[$(printf '%s' "$typed_flag" | tr '\n' ' ')]"$'\n'
+fi
+if [ -n "$route_bad" ]; then
+  note "FAIL: poteto-mode route table:"
+  note "$route_bad"
+  fail=1
+else
+  note "ok: poteto-mode routes every bundled skill and names the typed-only ones"
+fi
+
 note "Checking non-shipped verification helper"
 (
   cd "$verification"

@@ -36,6 +36,46 @@ Remaining triggers:
 - Broken skill mid-task → fix it in its own PR. Don't block. Don't silently work around it.
 - Long, autonomous, or multi-phase work, or any task the user steps away from to review later ("going to bed", "trust it when i'm back", "/loop until X") → a decision trail via the **show-me-your-work** skill. Commit it when stakes need an auditable record. Keep it local otherwise.
 
+## Route by request
+
+Route on what the user asked for, not on the phase you happen to be in. Take the one row that owns the request and read that skill or playbook before acting. The rows above stay cumulative: a `.ts` bug routes to **tdd** and still reads **typescript-best-practices**, and any row that writes prose still reads **unslop**. A row names a skill only where the narrower job beats the playbook that would otherwise own the request.
+
+| The request | Route |
+| --- | --- |
+| Catch up on earlier work, "where did I leave off", before resuming | **recall** |
+| Summarize my commits over a date range | **what-did-i-get-done** |
+| This chat since my last message, in plain words | **ketchup** |
+| I lost the thread, restate that | **bro** |
+| Know how a subsystem works now, or where new code should live | **how** |
+| Know why code is shaped this way, or where a number came from | **why** |
+| Explain a change or subsystem so I actually understand it | **teach** |
+| What could this change break somewhere else | **blast-radius**, before it ships |
+| Check I understood the goal before you start | **in-your-own-words** |
+| Rewrite this prompt before I send it | **sharpen** |
+| A bug with a cheap local test target | **tdd**, failing test first |
+| Any `.ts` or `.tsx` file | **typescript-best-practices** |
+| A harsh maintainability review of abstraction quality, giant files or condition growth | **thermo-nuclear-code-quality-review** |
+| Make this PR easy for a human to review: history, description, reviewer guidance | **make-pr-easy-to-review** |
+| Fix these failing checks, where driving the PR to merge is not the ask | **fix-ci** |
+| Resolve this conflict | **fix-merge-conflicts** |
+| Fetch and summarize the review comments only | **get-pr-comments** |
+| No scripted way to prove UI, CLI or service behavior | **create-verification-skill** |
+| The verification skill drifted from the app | **maintain-verification-skill** |
+| A race, invariant or other property tests rarely reach | **create-formal-verification-skill** |
+| Code under formal verification changed since its recorded sync | **maintain-formal-verification-skill** |
+| Choose or change the role models and requested efforts | **setup-pstack** |
+| Turn my working habits into a mode skill | **automate-me** |
+| Turn what this task taught into skill edits | **reflect** |
+| Stop agents repeating this repo's mistakes | **correct** |
+| How do I use pstack, which skill fits a situation | **poteto-help** |
+| A quick factual question, or a trivial one-line edit the user already scoped | no skill, answer directly |
+
+Six of those rows run only when the user types them: **correct**, **in-your-own-words**, **ketchup**, **maintain-formal-verification-skill**, **poteto-help** and **sharpen**. On Claude Code each carries `disable-model-invocation: true`, so name the skill and let the user send it. Invoking one fails.
+
+A route to a skill missing from the available-skills list is turned off on this install. Skip it.
+
+A request that matches no row takes no skill. Answering directly is the route for a question the tools settle and for an edit the user scoped themselves.
+
 ## Principles
 
 Read the leaf skill in full for any principle you apply. Each entry names when it applies. Each leaf is the **principle-<title>** skill, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its name.
